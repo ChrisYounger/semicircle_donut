@@ -135,7 +135,6 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	            var i;
 	            //console.log(data,config);
 	            this.donutCfg.data.labels = [];
-	            this.donutCfg.data.datasets = [];
 	            var ignoreField = -1;
 	            var colors = this.colors;
 	            for (i = 1; i < data.fields.length; i++) {
@@ -146,11 +145,12 @@ define(["api/SplunkVisualizationBase","api/SplunkVisualizationUtils"], function(
 	                        colors.push(data.columns[i][j]);
 	                    }
 	                } else {
-	                    this.donutCfg.data.datasets.push({
-	                        data: [],
-	                        backgroundColor: [],
-	                        label: data.fields[i].name
-	                    });
+	                    if (this.donutCfg.data.datasets.length < i) {
+	                        this.donutCfg.data.datasets.push({});
+	                    }
+	                    this.donutCfg.data.datasets[(i-1)].data = [];
+	                    this.donutCfg.data.datasets[(i-1)].backgroundColor = [];
+	                    this.donutCfg.data.datasets[(i-1)].label = data.fields[i].name;
 	                }
 	            }
 	            var foundNumeric = false;
