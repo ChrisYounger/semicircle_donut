@@ -13,6 +13,7 @@ function(
     return SplunkVisualizationBase.extend({
         initialize: function() {
             SplunkVisualizationBase.prototype.initialize.apply(this, arguments);
+            var instance = this;
             var theme = 'light';
             var fontColor = '#666';
             if (typeof vizUtils.getCurrentTheme === "function") {
@@ -76,7 +77,17 @@ function(
                                 return label;
                             } 
                         }
-                    }                                
+                    },
+                    onClick: function(browserEvent, elements){
+                        var data = {};
+                        if (elements.length > 0) {
+                            data[instance.datas.fields[0].name] = this.data.labels[elements[0]._index];
+                            instance.drilldown({
+                                action: SplunkVisualizationBase.FIELD_VALUE_DRILLDOWN,
+                                data: data
+                            }, browserEvent);                            
+                        }            
+                    }                         
                 }
             };
 			this.myDoughnut = new Chart(this.ctx, this.donutCfg);            
@@ -90,6 +101,7 @@ function(
             var i;
             //console.log(data,config);
             this.donutCfg.data.labels = [];
+            this.datas = data;
             var ignoreField = -1;
             var colors = this.colors;
             for (i = 1; i < data.fields.length; i++) {

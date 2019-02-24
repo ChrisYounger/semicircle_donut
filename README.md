@@ -40,3 +40,4 @@ The following third-party libraries are used by this app. Thank you!
 
 * Chart.js - MIT - https://www.chartjs.org/
 * jQuery - MIT - https://jquery.com/
+* Font Awesome - CC BY 4.0 License - https://fontawesome.com/
