@@ -1,13 +1,13 @@
 <form class="splunk-formatter-section" section-label="General">
 
-    <splunk-control-group label="Type">
+    <splunk-control-group label="Type" help="">
         <splunk-radio-input name="{{VIZ_NAMESPACE}}.type" value="half">
             <option value="half">Semicircle</option>
             <option value="full">Circle</option>
         </splunk-radio-input>      
     </splunk-control-group>
     
-    <splunk-control-group label="Legend position">
+    <splunk-control-group label="Legend position" help="">
         <splunk-select name="{{VIZ_NAMESPACE}}.legendPosition" value="top">
             <option value="right">Right</option>
             <option value="bottom">Bottom</option>
@@ -17,7 +17,7 @@
         </splunk-select> 
     </splunk-control-group>
     
-    <splunk-control-group label="Cutout percentage">
+    <splunk-control-group label="Cutout percentage" help="">
         <splunk-text-input name="{{VIZ_NAMESPACE}}.cutoutPercentage" value="50"></splunk-text-input>
     </splunk-control-group>
 
