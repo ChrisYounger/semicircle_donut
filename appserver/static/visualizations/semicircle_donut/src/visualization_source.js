@@ -14,6 +14,7 @@ function(
         initialize: function() {
             SplunkVisualizationBase.prototype.initialize.apply(this, arguments);
             var instance = this;
+            //console.log("instance",instance);
             var theme = 'light';
             var fontColor = '#666';
             if (typeof vizUtils.getCurrentTheme === "function") {
@@ -30,10 +31,10 @@ function(
             this.errordiv = $('<div style="text-align:center; font-size: 16px;"></div>');
             this.$el.append(this.errordiv);
             this.canvas = $('<canvas></canvas>');
-            this.$el.append(this.canvas);            
+            this.$el.append(this.canvas);
             this.canvas[0].width = this.$el.width()
             this.canvas[0].height = this.$el.height();
-			this.ctx = this.canvas[0].getContext('2d');
+            this.ctx = this.canvas[0].getContext('2d');
             this.donutCfg = {
                 type: 'doughnut',
                 data: {
@@ -42,13 +43,16 @@ function(
                 },
                 options: {
                     circumference: Math.PI,
-                    rotation: -Math.PI,                   
+                    rotation: -Math.PI,
                     maintainAspectRatio: false,
                     responsive: true,
                     legend: {
                         position: 'top',
                         labels: {
                             fontColor: fontColor
+                        },
+                        onHover: function(e) {
+                            e.target.style.cursor = 'pointer';
                         }
                     },
                     title: {
@@ -78,6 +82,16 @@ function(
                             } 
                         }
                     },
+                    hover: {
+                        onHover: function(e) {
+                            var point = this.getElementAtEvent(e);
+                            if (point.length && instance.drilldown_enabled) {
+                                e.target.style.cursor = 'pointer';
+                            } else {
+                                e.target.style.cursor = 'default';
+                            }
+                        }
+                    },
                     onClick: function(browserEvent, elements){
                         var data = {};
                         if (elements.length > 0) {
@@ -85,12 +99,12 @@ function(
                             instance.drilldown({
                                 action: SplunkVisualizationBase.FIELD_VALUE_DRILLDOWN,
                                 data: data
-                            }, browserEvent);                            
-                        }            
-                    }                         
+                            }, browserEvent);
+                        }
+                    }
                 }
             };
-			this.myDoughnut = new Chart(this.ctx, this.donutCfg);            
+            this.myDoughnut = new Chart(this.ctx, this.donutCfg);
         },
 
         formatData: function(data) {
@@ -99,9 +113,11 @@ function(
 
         updateView: function(data, config) {
             var i;
-            //console.log(data,config);
+            //console.log("data",data);
+            //console.log("config",config);
             this.donutCfg.data.labels = [];
             this.datas = data;
+            this.drilldown_enabled = !!(config.hasOwnProperty("display.visualizations.custom.drilldown") && config["display.visualizations.custom.drilldown"] == "all");
             var ignoreField = -1;
             var colors = this.colors;
             for (i = 1; i < data.fields.length; i++) {
@@ -128,7 +144,7 @@ function(
                     } else if (i !== ignoreField) {
                         if (! isNaN(Number(data.columns[i][j]))) {
                             foundNumeric = true;
-                        }                        
+                        }
                         this.donutCfg.data.datasets[(i-1)].data.push(data.columns[i][j]);
                         this.donutCfg.data.datasets[(i-1)].backgroundColor.push(colors[j % colors.length]);
                     }
@@ -146,11 +162,11 @@ function(
                     this.myDoughnut.options.legend.display = false;
                 } else {
                     this.myDoughnut.options.legend.display = true;
-			        this.myDoughnut.options.legend.position = config["display.visualizations.custom.semicircle_donut.semicircle_donut.legendPosition"];
+                    this.myDoughnut.options.legend.position = config["display.visualizations.custom.semicircle_donut.semicircle_donut.legendPosition"];
                 }
             }
             if (config.hasOwnProperty("display.visualizations.custom.semicircle_donut.semicircle_donut.cutoutPercentage")) {
-			    this.myDoughnut.options.cutoutPercentage = parseFloat(config["display.visualizations.custom.semicircle_donut.semicircle_donut.cutoutPercentage"]);
+                this.myDoughnut.options.cutoutPercentage = parseFloat(config["display.visualizations.custom.semicircle_donut.semicircle_donut.cutoutPercentage"]);
             }
 
             if (! data.columns.length) {
